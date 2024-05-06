@@ -1,5 +1,6 @@
-let AI_positions = [1,2,3,6,8];
-let player_positions = [4,5,7];
+let AI_positions = [];
+let player_positions = [];
+let board = "0   1   2\n3   4   5\n6   7   8"
 const posible_victories = [
     [0,1,2],//victory by row
     [3,4,5],//victory by row
@@ -26,9 +27,10 @@ function is_the_match_over(){
         //check if the position dosen't belong to anyone
         if(victory.some(
             position => {
-            (!player_positions.includes(position)) && (!AI_positions.includes(position))
-            }
-        )){
+                    return (!player_positions.includes(position)) && (!AI_positions.includes(position))
+                }
+            )
+        ){
             free_positions = true;
         }
     })
@@ -141,8 +143,13 @@ function select_victory_path(){
     return ordered_selected_victory;
 }
 
+function is_victory_path_available(current_path_to_victory){
+    return !current_path_to_victory.some(position => player_positions.includes(position))
+}
+
 function draw_board(){
-    let board = "0   1   2\n3   4   5\n6   7   8"
+    let current_path_to_victory = null;
+    let next_position_in_path;
     while(true){
         //read the user position and validate it
         let position = Number(prompt("El juego de la vieja:\n"+board + "\nIngresa una posicion"));
@@ -158,6 +165,12 @@ function draw_board(){
             alert("esta posición ya era tuya, selecciona otra");
             continue;
         }
+        
+        // add the position to the player's positions
+        player_positions.push(position);
+        //update the board string;
+        board = board.replace(String(position),"H");
+
         let is_match_over = false;
         let play_again;
         switch (is_the_match_over()){
@@ -176,7 +189,7 @@ function draw_board(){
             default:
                 break;
         }
-        
+
         if(is_match_over && play_again){
             reset_match();
             alert("Ha comenzado una nueva partida!");
@@ -186,12 +199,29 @@ function draw_board(){
             alert("ha sido un gusto jugar con tigo!");
             break;
         }
+
+        //Get a new victory path if there is none or if it is no longer valid
+        if(current_path_to_victory == null || !is_victory_path_available(current_path_to_victory)){
+            current_path_to_victory = select_victory_path();
+            for(i = 0; i < current_path_to_victory.length; i++){
+                if(!AI_positions.includes(current_path_to_victory[i])){
+                    next_position_in_path = i;
+                    break;
+                }
+            }
+        }
+
+        //take the next position in the victory path and update the board string
+        AI_positions.push(current_path_to_victory[next_position_in_path]);
+        board = board.replace(current_path_to_victory[next_position_in_path],"AI");
+        next_position_in_path ++;
     }
 }
 
 function reset_match(){
     player_positions = [];
     AI_positions = [];
+    board = "0   1   2\n3   4   5\n6   7   8"
 }
 
 draw_board()
