@@ -1,5 +1,5 @@
 let AI_positions = [];
-let player_positions = [0,4,1];
+let player_positions = [4];
 const posible_victories = [
     [0,1,2],//victory by row
     [3,4,5],//victory by row
@@ -33,10 +33,23 @@ function player_wins_in_the_next_move(){
                 }
             }
         }
-        //player can't win in the next move, so return false
     }
+    //player can't win in the next move, so return false
     return false
-
 }
 
-console.log(player_wins_in_the_next_move());
+
+function available_victories(){
+    //returns the victories that are still available, that is, those of which no positions belong to the oponent.
+    
+    //deep copy the possible victories
+    let available_victories = JSON.parse(JSON.stringify(posible_victories));
+
+    //filter victories with at least one position belonging to the oponent
+    available_victories = available_victories.filter(victory => !victory.some(position => player_positions.includes(position)));
+
+    return available_victories;
+}
+
+
+available_victories();
