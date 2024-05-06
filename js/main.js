@@ -1,5 +1,5 @@
 let AI_positions = [1,2,3,6,8];
-let player_positions = [0,4,5,7];
+let player_positions = [4,5,7];
 const posible_victories = [
     [0,1,2],//victory by row
     [3,4,5],//victory by row
@@ -141,4 +141,57 @@ function select_victory_path(){
     return ordered_selected_victory;
 }
 
-console.log(is_the_match_over())
+function draw_board(){
+    let board = "0   1   2\n3   4   5\n6   7   8"
+    while(true){
+        //read the user position and validate it
+        let position = Number(prompt("El juego de la vieja:\n"+board + "\nIngresa una posicion"));
+        if(isNaN(position) || position > 8 || position < 0){
+            alert("La posición ingresada no es válida, debe ser un numero entre 0 y 8");
+            continue;
+        }
+        if(AI_positions.includes(position)){
+            alert("esta posición le pertenece a la IA, selecciona otra");
+            continue;
+        }
+        if(player_positions.includes(position)){
+            alert("esta posición ya era tuya, selecciona otra");
+            continue;
+        }
+        let is_match_over = false;
+        let play_again;
+        switch (is_the_match_over()){
+            case "ai":
+                play_again = confirm("Gano la I.A\n clica en ok para jugar otra vez");
+                is_match_over = true;
+                break;
+            case "player":
+                play_again = confirm("Felicitaciones, ganaste!\nClica en Ok para jugar otra vez");
+                is_match_over = true;
+                break;
+            case "draw":
+                play_again = confirm("He encontrado un adversario digno, hemos empatado\nClica en Ok para jugar otra vez");
+                is_match_over = true;
+                break;
+            default:
+                break;
+        }
+        
+        if(is_match_over && play_again){
+            reset_match();
+            alert("Ha comenzado una nueva partida!");
+            continue;
+        }
+        if(is_match_over && !play_again){
+            alert("ha sido un gusto jugar con tigo!");
+            break;
+        }
+    }
+}
+
+function reset_match(){
+    player_positions = [];
+    AI_positions = [];
+}
+
+draw_board()
