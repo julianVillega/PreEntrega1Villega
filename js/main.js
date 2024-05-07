@@ -13,6 +13,7 @@ class Match{
     constructor(){
         this.AI_positions = [];
         this.player_positions = [];
+        this.all_positions = [0,1,2,3,4,5,6,7,8];
         this.board = "0   1   2\n3   4   5\n6   7   8"
         this.current_path_to_victory = null;
         this.next_position_in_path = 0;
@@ -123,6 +124,12 @@ function select_victory_path(match){
 
     //get the available victories for the AI.
     let victories = available_victories(match);
+
+    //if winning is no longer possible, take the next empty positions
+    if(victories.length == 0){        
+        let free_positions = match.all_positions.filter(position => !match.player_positions.includes(position) && !match.AI_positions.includes(position));
+        return free_positions.slice(0,3);
+    }
     
     //Used to keep track of how many times each position apears among the available victories.
     function Position_ocurrence (position, ocurrences){
@@ -201,7 +208,7 @@ function draw_board(){
         }
 
         position = Number(position);
-        
+
         if(isNaN(position) || position > 8 || position < 0){
             alert("La posición ingresada no es válida, debe ser un numero entre 0 y 8");
             continue;
