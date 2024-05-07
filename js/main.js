@@ -17,12 +17,10 @@ class Match{
         this.board = "0   1   2\n3   4   5\n6   7   8"
         this.current_path_to_victory = null;
         this.next_position_in_path = 0;
-        this.is_match_over = false;
-        this.play_again = false;
     }
     take_position(position, player_name){
         //gives a position to the player with the corresponding player name
-        
+
         let positions = (player_name === "AI") ? this.AI_positions : this.player_positions
         //give the position to the player/AI
         positions.push(position);
@@ -34,55 +32,66 @@ class Match{
             this.board = this.board.replace(String(position),"AI");
         }
     }
+    match_status(){
+        //checks weather the match ended.
+        // returns "ai", "oponent", "draw" or "continue"
+        let free_positions = false;
+        let winner = "none";
+        for(let victory of posible_victories){
+            if(victory.every(position => this.AI_positions.includes(position))){
+                winner = "ai";
+                break;
+            }
+            if(victory.every(position => this.player_positions.includes(position))){
+                winner="player"
+                break;
+            }
+            //check if the position dosen't belong to anyone
+            if(victory.some(position => {return (!this.player_positions.includes(position)) && (!this.AI_positions.includes(position))})){
+                free_positions = true;
+            }
+        }
+        
+        if(winner !== "none"){
+            return winner
+        }
+        if(free_positions && winner == "none"){
+            return "continue";
+        }
+        if(!free_positions && winner =="none"){
+            return "draw"
+        }
+    }
 }
 
-function is_the_match_over(match){
-    //checks weather the match ended.
-    // returns "ai", "oponent", "draw" or "continue"
-    let free_positions = false;
-    let winner = "none";
-    match.is_match_over = false;
-    let result;
-    for(victory of posible_victories){
-        if(victory.every(position => match.AI_positions.includes(position))){
-            winner = "ai";
-            break;
-        }
-        if(victory.every(position => match.player_positions.includes(position))){
-            winner="player"
-            break;
-        }
-        //check if the position dosen't belong to anyone
-        if(victory.some(position => {return (!match.player_positions.includes(position)) && (!match.AI_positions.includes(position))})){
-            free_positions = true;
-        }
-    }
-    
-    if(winner !== "none"){
-        result = winner
-    }
-    if(free_positions && winner == "none"){
-        result = "continue";
-    }
-    if(!free_positions && winner =="none"){
-        result = "draw"
-    }
-
-    switch (result){
+function is_the_match_over(match, loop_control){
+    let play_again;    
+    let is_match_over = false;
+    loop_control.status = "continue";
+    switch (match.match_status()){
         case "ai":
-            match.play_again = confirm("Gano la I.A\n clica en ok para jugar otra vez\n"+match.board);
-            match.is_match_over = true;
+            play_again = confirm("Gano la I.A\n clica en ok para jugar otra vez\n"+match.board);
+            is_match_over = true;
             break;
         case "player":
-            match.play_again = confirm("Felicitaciones, ganaste!\nClica en Ok para jugar otra vez\n"+match.board);
-            match.is_match_over = true;
+            play_again = confirm("Felicitaciones, ganaste!\nClica en Ok para jugar otra vez\n"+match.board);
+            is_match_over = true;
             break;
         case "draw":
-            match.play_again = confirm("He encontrado un adversario digno, hemos empatado\nClica en Ok para jugar otra vez\n"+match.board);
-            match.is_match_over = true;
+            play_again = confirm("He encontrado un adversario digno, hemos empatado\nClica en Ok para jugar otra vez\n"+match.board);
+            is_match_over = true;
             break;
         default:
             break;
+    }
+    if(is_match_over && play_again){
+        reset_match(match);
+        loop_control.status = "continue";
+        alert("Ha comenzado una nueva partida!");        
+    }
+    if(is_match_over && !play_again){
+        loop_control.status = "break";
+        alert("ha sido un gusto jugar con tigo!");        
     }
 }
 
@@ -213,6 +222,7 @@ function reset_match(match){
 
 function draw_board(){
     let match = new Match()
+    loop_control = {status:"continue"}
     while(true){
         //read the user position and validate it        
         let position = prompt("El juego de la vieja:\n"+match.board + "\nIngresa una posicion");
@@ -240,18 +250,10 @@ function draw_board(){
         match.take_position(position,"player");
 
         //check if the match is over
-        is_the_match_over(match);
+        is_the_match_over(match, loop_control);
         
-        if(match.is_match_over && match.play_again){
-            reset_match(match);
-            alert("Ha comenzado una nueva partida!");
-            continue;
-        }
-        if(match.is_match_over && !match.play_again){
-            alert("ha sido un gusto jugar con tigo!");
-            break;
-        }
-        //AI turn begins.
+
+        // AI turn begins.
         //check if the player or AI can win
         let AI_win_position = player_wins_in_the_next_move(match,"AI")
         let block_position = player_wins_in_the_next_move(match,"player")        
@@ -283,19 +285,8 @@ function draw_board(){
         }
         
         //check if the match is over
-        is_the_match_over(match);
-        
-        if(match.is_match_over && match.play_again){
-            reset_match(match);
-            alert("Ha comenzado una nueva partida!");
-            continue;
-        }
-        if(match.is_match_over && !match.play_again){
-            alert("ha sido un gusto jugar con tigo!");
-            break;
-        }
+        is_the_match_over(match, loop_control);
     }
 }
 
-//0628
-draw_board()
+draw_board();
