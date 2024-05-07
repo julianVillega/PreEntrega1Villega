@@ -1,6 +1,3 @@
-// let AI_positions = [];
-// let player_positions = [];
-// let board = "0   1   2\n3   4   5\n6   7   8"
 const posible_victories = [
     [0,1,2],//victory by row
     [3,4,5],//victory by row
@@ -31,18 +28,20 @@ function is_the_match_over(match){
     let winner = "none";
     match.is_match_over = false;
     let result;
-    posible_victories.forEach(victory =>{
+    for(victory of posible_victories){
         if(victory.every(position => match.AI_positions.includes(position))){
-            winner = "ai";                     
+            winner = "ai";
+            break;
         }
         if(victory.every(position => match.player_positions.includes(position))){
             winner="player"
+            break;
         }
         //check if the position dosen't belong to anyone
         if(victory.some(position => {return (!match.player_positions.includes(position)) && (!match.AI_positions.includes(position))})){
             free_positions = true;
         }
-    })
+    }
     
     if(winner !== "none"){
         result = winner
@@ -80,6 +79,11 @@ function player_wins_in_the_next_move(match){
         let victory = posible_victories[i];
         let player_held_positions = 0;
         for (position_index = 0; position_index < 3; position_index++){
+            //player cant win if the AI has one position.
+            if(victory.some(position => match.AI_positions.includes(position))){
+                continue;
+            }
+            //player can win if he has at least 2 positions
             if (match.player_positions.includes(victory[position_index])){
                 player_held_positions ++;
             }
@@ -195,7 +199,6 @@ function draw_board(){
         }
 
         position = Number(position);
-
         if(isNaN(position) || position > 8 || position < 0){
             alert("La posición ingresada no es válida, debe ser un numero entre 0 y 8");
             continue;
@@ -226,6 +229,15 @@ function draw_board(){
         if(match.is_match_over && !match.play_again){
             alert("ha sido un gusto jugar con tigo!");
             break;
+        }
+        //AI turn begins.
+    
+        //block the player if he can win in his next move.
+        let block_position = player_wins_in_the_next_move(match)        
+        if(block_position !== false){
+            match.AI_positions.push(block_position);
+            match.board = match.board.replace(block_position,"AI");
+            continue;
         }
 
         //Get a new victory path if there is none or if it is no longer valid
@@ -260,5 +272,5 @@ function draw_board(){
     }
 }
 
-
+//0628
 draw_board()
