@@ -20,6 +20,20 @@ class Match{
         this.is_match_over = false;
         this.play_again = false;
     }
+    take_position(position, player_name){
+        //gives a position to the player with the corresponding player name
+        
+        let positions = (player_name === "AI") ? this.AI_positions : this.player_positions
+        //give the position to the player/AI
+        positions.push(position);
+        //update the match.board string;
+        if(player_name ==="player"){
+            this.board = this.board.replace(String(position),"H");
+        }
+        else{
+            this.board = this.board.replace(String(position),"AI");
+        }
+    }
 }
 
 function is_the_match_over(match){
@@ -222,11 +236,8 @@ function draw_board(){
             continue;
         }
         
-        // add the position to the player's positions
-        match.player_positions.push(position);
-        //update the match.board string;
-        match.board = match.board.replace(String(position),"H");
-
+        //give the position to the player
+        match.take_position(position,"player");
 
         //check if the match is over
         is_the_match_over(match);
@@ -247,13 +258,11 @@ function draw_board(){
         
         //if the AI can win, do so
         if(AI_win_position !== false){
-            match.AI_positions.push(AI_win_position);
-            match.board = match.board.replace(AI_win_position,"AI");            
+            match.take_position(AI_win_position,"AI")            
         }
         //if the player can win, prevent him from winning.
         else if(block_position !== false){
-            match.AI_positions.push(block_position);
-            match.board = match.board.replace(block_position,"AI");
+            match.take_position(block_position,"AI")
         }
         //if neither can win in this turn, follow the path to victory strategy
         else{
@@ -269,12 +278,10 @@ function draw_board(){
                 }
             }
             //take the next position in the victory path and update the board string
-            match.AI_positions.push(match.current_path_to_victory[match.next_position_in_path]);
-            match.board = match.board.replace(match.current_path_to_victory[match.next_position_in_path],"AI");
+            match.take_position(match.current_path_to_victory[match.next_position_in_path],"AI")
             match.next_position_in_path ++;
         }
         
-
         //check if the match is over
         is_the_match_over(match);
         
