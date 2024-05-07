@@ -201,6 +201,7 @@ function draw_board(){
         }
 
         position = Number(position);
+        
         if(isNaN(position) || position > 8 || position < 0){
             alert("La posición ingresada no es válida, debe ser un numero entre 0 y 8");
             continue;
@@ -233,31 +234,39 @@ function draw_board(){
             break;
         }
         //AI turn begins.
-    
-        //block the player if he can win in his next move.
+        //check if the player or AI can win
+        let AI_win_position = player_wins_in_the_next_move(match,"AI")
         let block_position = player_wins_in_the_next_move(match,"player")        
-        if(block_position !== false){
+        
+        //if the AI can win, do so
+        if(AI_win_position !== false){
+            match.AI_positions.push(AI_win_position);
+            match.board = match.board.replace(AI_win_position,"AI");            
+        }
+        //if the player can win, prevent him from winning.
+        else if(block_position !== false){
             match.AI_positions.push(block_position);
             match.board = match.board.replace(block_position,"AI");
-            continue;
         }
-
-        //Get a new victory path if there is none or if it is no longer valid
-        if(match.current_path_to_victory == null || !is_victory_path_available(match.current_path_to_victory, match)){
-            match.current_path_to_victory = select_victory_path(match);
-            for(i = 0; i < match.current_path_to_victory.length; i++){
-                //find wich position of the current path the ai should take next.
-                if(!match.AI_positions.includes(match.current_path_to_victory[i])){
-                    match.next_position_in_path = i;
-                    break;
+        //if neither can win in this turn, follow the path to victory strategy
+        else{
+            //Get a new victory path if there is none or if it is no longer valid
+            if(match.current_path_to_victory == null || !is_victory_path_available(match.current_path_to_victory, match)){
+                match.current_path_to_victory = select_victory_path(match);
+                for(i = 0; i < match.current_path_to_victory.length; i++){
+                    //find wich position of the current path the ai should take next.
+                    if(!match.AI_positions.includes(match.current_path_to_victory[i])){
+                        match.next_position_in_path = i;
+                        break;
+                    }
                 }
             }
+            //take the next position in the victory path and update the board string
+            match.AI_positions.push(match.current_path_to_victory[match.next_position_in_path]);
+            match.board = match.board.replace(match.current_path_to_victory[match.next_position_in_path],"AI");
+            match.next_position_in_path ++;
         }
-
-        //take the next position in the victory path and update the board string
-        match.AI_positions.push(match.current_path_to_victory[match.next_position_in_path]);
-        match.board = match.board.replace(match.current_path_to_victory[match.next_position_in_path],"AI");
-        match.next_position_in_path ++;
+        
 
         //check if the match is over
         is_the_match_over(match);
