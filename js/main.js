@@ -226,6 +226,12 @@ function draw_board(){
     while(true){
         //read the user position and validate it        
         let position = prompt("El juego de la vieja:\n"+match.board + "\nIngresa una posicion");
+        
+        if(position ===""){
+            alert("debes ingresar el numero de la pocion en la que deseas jugar");
+            continue;
+        }
+        
         if(position == null){
             alert("ha sido un gusto jugar con tigo!");
             break;
