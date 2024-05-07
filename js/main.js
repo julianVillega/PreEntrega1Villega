@@ -71,27 +71,29 @@ function is_the_match_over(match){
     }
 }
 
-function player_wins_in_the_next_move(match){
-    //If the player can win in his netx move, this returns the position the AI must take to block the player.
+function player_wins_in_the_next_move(match, player_name){
+    //If the player passed in as parameter can win in his netx move, this returns the position they lack to win.
     //Otherwise returns false.
+
+    let player_positions = (player_name === "AI") ? match.AI_positions : match.player_positions;
+    let oponent_positions = (player_name === "AI") ?  match.player_positions : match.AI_positions;
 
     for(i= 0; i<8; i++){
         let victory = posible_victories[i];
         let player_held_positions = 0;
         for (position_index = 0; position_index < 3; position_index++){
-            //player cant win if the AI has one position.
-            if(victory.some(position => match.AI_positions.includes(position))){
+            //player cant win if the oponent has one position.
+            if(victory.some(position => oponent_positions.includes(position))){
                 continue;
             }
             //player can win if he has at least 2 positions
-            if (match.player_positions.includes(victory[position_index])){
+            if (player_positions.includes(victory[position_index])){
                 player_held_positions ++;
             }
             if (player_held_positions == 2){
                 //find with position is not held by the player and return it
                 for (j = 0; j < 3; j++){       
-                    if (!(match.player_positions.includes(victory[j]))){
-                        console.log(victory)
+                    if (!(player_positions.includes(victory[j]))){                        
                         return victory[j];
                     }
                 }
@@ -233,7 +235,7 @@ function draw_board(){
         //AI turn begins.
     
         //block the player if he can win in his next move.
-        let block_position = player_wins_in_the_next_move(match)        
+        let block_position = player_wins_in_the_next_move(match,"player")        
         if(block_position !== false){
             match.AI_positions.push(block_position);
             match.board = match.board.replace(block_position,"AI");
