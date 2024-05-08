@@ -86,7 +86,7 @@ function is_the_match_over(match, loop_control){
     }
     if(is_match_over && play_again){
         reset_match(match);
-        loop_control.status = "continue";
+        loop_control.status = "restart";
         alert("Ha comenzado una nueva partida!");        
     }
     if(is_match_over && !play_again){
@@ -223,15 +223,9 @@ function reset_match(match){
 function draw_board(){
     let match = new Match()
     loop_control = {status:"continue"}
-    while(true){
+    while(loop_control.status != "break"){
         //read the user position and validate it        
-        let position = prompt("El JUEGO DE LA VIEJA:\nH: tus posiciones \nIA: posiciones del BOT\n"+match.board + "\nIngresa una posición");
-        
-
-        if(position ===""){
-            alert("debes ingresar el número de la posición en la que deseas jugar");
-            continue;
-        }
+        let position = prompt("El JUEGO DE LA VIEJA:\nH: tus posiciones \nIA: posiciones del BOT\n"+match.board + "\nIngresa una posición");        
         
         if(position == null){
             alert("ha sido un gusto jugar contigo!");
@@ -258,6 +252,9 @@ function draw_board(){
 
         //check if the match is over
         is_the_match_over(match, loop_control);
+        if(loop_control.status == "restart" || loop_control.status == "break"){
+            continue;
+        }
         
 
         // AI turn begins.
@@ -293,6 +290,9 @@ function draw_board(){
         
         //check if the match is over
         is_the_match_over(match, loop_control);
+        if(loop_control.status == "restart" || loop_control.status == "break"){
+            continue;
+        }
     }
 }
 document.addEventListener("DOMContentLoaded", function() {
