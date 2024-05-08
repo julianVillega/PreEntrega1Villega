@@ -70,7 +70,7 @@ function is_the_match_over(match, loop_control){
     loop_control.status = "continue";
     switch (match.match_status()){
         case "ai":
-            play_again = confirm("Gano la I.A\n clica en ok para jugar otra vez\n"+match.board);
+            play_again = confirm("Ganó la I.A\n clica en ok para jugar otra vez\n"+match.board);
             is_match_over = true;
             break;
         case "player":
@@ -91,7 +91,7 @@ function is_the_match_over(match, loop_control){
     }
     if(is_match_over && !play_again){
         loop_control.status = "break";
-        alert("ha sido un gusto jugar con tigo!");        
+        alert("Ha sido un gusto jugar contigo!");        
     }
 }
 
@@ -225,22 +225,23 @@ function draw_board(){
     loop_control = {status:"continue"}
     while(true){
         //read the user position and validate it        
-        let position = prompt("El juego de la vieja:\n"+match.board + "\nIngresa una posicion");
+        let position = prompt("El JUEGO DE LA VIEJA:\nH: tus posiciones \nIA: posiciones del BOT\n"+match.board + "\nIngresa una posición");
         
+
         if(position ===""){
-            alert("debes ingresar el numero de la pocion en la que deseas jugar");
+            alert("debes ingresar el número de la posición en la que deseas jugar");
             continue;
         }
         
         if(position == null){
-            alert("ha sido un gusto jugar con tigo!");
+            alert("ha sido un gusto jugar contigo!");
             break;
         }
 
         position = Number(position);
 
         if(isNaN(position) || position > 8 || position < 0){
-            alert("La posición ingresada no es válida, debe ser un numero entre 0 y 8");
+            alert("La posición ingresada no es válida, debe ser un número entre 0 y 8");
             continue;
         }
         if(match.AI_positions.includes(position)){
@@ -248,7 +249,7 @@ function draw_board(){
             continue;
         }
         if(match.player_positions.includes(position)){
-            alert("esta posición ya era tuya, selecciona otra");
+            alert("esta posición ya es tuya, selecciona otra");
             continue;
         }
         
