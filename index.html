@@ -3,9 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/styles.css">
     <title>Document</title>
 </head>
 <body>
+    <h1>El Juego De La Vieja</h1>
+    <p>para esta pre entrega opté por crear un BOT para el juego de la vieja.</p>
+    <h2>Como funciona ?</h2>
+    <p>El mismo tiene tiene el siguiente comportamiento:
+    A cada turno, el bot evalúa si alguien ganó la partida o se produjo un empate.
+    Caso no haya terminado la partida, el bot evalúa si tiene condiciones de ganar en ese turno. Si puede ganar, gana (¬_¬).
+    Caso contrario, evalúa si su oponente está en condiciones de ganar en su próximo turno. Si ese es el caso, el BOT intenta impedir que gane
+    Si no se da ninguno de los casos anteriores, el BOT intenta encontrar el mejor grupo de 3 posiciones del tablero que debe tomar para ganar en los próximos turnos.
+    Llamemos a estos grupos de "ternas victoriosas" xD</p>
+    
+    <h3>Diagrama de flujo:</h3>
+    
+    <img src="./images/flow-chart.png" alt="">
+    
+    <p>A este grupo de 3 posiciones, yo lo llamo de current_path_to_victory en mi código. El current_path_to_victory es actualizado en función de las jugadas del adversario.
+    A cada turno, el BOT verifica si todavía puede ganar usando el current_path_to_victory. Si no puede elije uno nuevo</p>
+
+    <h3>Cómo se selecciona el current_path_to_victory ?</h3>
+    <h4>En términos generales, se elige en 2 pasos</h4>
+    <h4>1º: encontrar la posición del tablero más común entre las "ternas victoriosas"</h4>
+    <P>Este paso consiste en iterar sobre todas las "ternas victoriosas" cuyas posiciones están libres o ya son del  BOT</P>
+    <p>Durante este proceso, se cuenta cuántas veces aparece cada posición</p>
+    <p>Luego de terminada la iteración, se selecciona la posición que más veces aparece, llamemos la "posición más común"</p>
+    <h4>2º encontrar la mejor "terna victoriosa" que contenga la "posición más común"</h4>
+    <p>En este paso, iteramos sobre las "ternas victoriosas" que contienen la "posición más común"</p>
+    <p>Para cada terna, contamos cuántas veces aparecen cada una de sus posiciones entre las "ternas victoriosas" que contienen la "posición más común". Luego sumamos estos valores</p>
+    <p>La terna cuya suma resulte mayor, será la elegida.</p>
     
 <script src="./js/main.js"></script>
 </body>

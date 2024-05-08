@@ -294,5 +294,6 @@ function draw_board(){
         is_the_match_over(match, loop_control);
     }
 }
-
-draw_board();
+document.addEventListener("DOMContentLoaded", function() {
+    draw_board();
+});
